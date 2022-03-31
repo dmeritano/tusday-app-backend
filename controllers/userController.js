@@ -1,5 +1,5 @@
 import User from "../models/User.js"
-import { generateId, generateJWT } from "../helpers/index.js"
+import { generateId, generateJWT, sendEmailUserRegister } from "../helpers/index.js"
 
 const register = async (req, res) => {
   try {
@@ -8,7 +8,7 @@ const register = async (req, res) => {
     const registeredUsr = await User.findOne({ email })
     if (registeredUsr) {
       const error = new Error(
-        "There is already a registered user with the email entered"
+        "Email account already registered"
       )
       return res.status(400).json({ msg: error.message })
     }
@@ -16,8 +16,16 @@ const register = async (req, res) => {
     //Create new user
     const user = new User(req.body)
     user.token = generateId()
-    const storedUser = await user.save()
-    res.json({ msg: `User created Id ${storedUser._id}` })
+    await user.save()
+
+    //Confirm email
+    sendEmailUserRegister({
+      email:user.email,
+      name:user.name,
+      token:user.token
+    })
+
+    res.json({ msg: "Account created successfully. Check your email to activate it" })
   
   } catch (error) {
     console.log(`Error creating user: ${error.message}`)
@@ -29,6 +37,8 @@ const authenticate = async (req, res) => {
 
   try {
 
+    console.log(req.body)
+    
     const { email, password } = req.body
 
     const registeredUsr = await User.findOne({ email }) 
