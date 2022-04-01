@@ -1,5 +1,5 @@
 import User from "../models/User.js"
-import { generateId, generateJWT, sendEmailUserRegister } from "../helpers/index.js"
+import { generateId, generateJWT, sendEmailUserRegister, sendEmailResetPassword } from "../helpers/index.js"
 
 const register = async (req, res) => {
   try {
@@ -107,6 +107,15 @@ const reset = async (req, res) => {
     }    
     registeredUsr.token = generateId()
     registeredUsr.save()
+
+    //Send email
+    sendEmailResetPassword({
+      email:registeredUsr.email,
+      name:registeredUsr.name,
+      token:registeredUsr.token
+    })
+
+
     return res.json({msg:"Reset token generated. Check your email for instructions"})
   } catch (error) {
     console.log(`Error reseting user password: ${error.message}`)
@@ -137,13 +146,16 @@ const updatePassword = async (req, res) => {
 
   try {
     const { token } = req.params
+    console.log("eq6au19tnt81fviph9lb", token)
+
     const { password } = req.body
     const registeredUsr = await User.findOne({ token })
     if (!registeredUsr){
-      const error = new Error("Invalid token")
+      const error = new Error("Invalid token id")
       return res.status(404).json({ msg: error.message })      
     }
 
+    console.log("usuario encontrado por token")
     registeredUsr.password = password
     registeredUsr.token = ""
     registeredUsr.save()
@@ -155,6 +167,7 @@ const updatePassword = async (req, res) => {
     res.status(400).json({ msg: "Error updating user password" })                    
   }  
 }
+
 
 const profile = async (req, res) => {
   

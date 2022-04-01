@@ -1,5 +1,5 @@
 import nodemailer from "nodemailer"
-//Helpers functions
+//Helpers functions 
 import jwt from "jsonwebtoken"
 
 const generateId = () => {
@@ -14,22 +14,19 @@ const generateJWT = (id) => {
 
 }
 
-const sendEmailUserRegister = async (data) => {
-    
+const sendEmailUserRegister = async (data) => {    
     const {email, name, token} = data
-
     const transport = getMailTransport()
-
     const info = await transport.sendMail({
         from: '"TusDay - Project Administrator" <cuentas@tusday.com>',
         to:email,
         subject:"TusDay - Account confirmation",
         text:"Confirm your account",
-        html:`<p>Hola ${name}</p>
+        html:`<p>Hello ${name}</p>
         <p>Please confirm your account in TusDay in order to grant access to the application</p>
         <p>Click on the following link or copy and paste it into your browser:</p> 
         
-        <a href="${process.env.FRONTEND_URL}/confirm/${token}">Activate your account!</a>
+        <a href="${process.env.FRONTEND_URL}/account-confirm/${token}">Activate your account!</a>
         
         <p>If you did not create this account you can ignore this message</p>
 
@@ -37,36 +34,43 @@ const sendEmailUserRegister = async (data) => {
         <p style="font-weight: 900; color:#EA580C;font-size: large;">TusDay Team</p>
         `
     })
-
 }
-/*
 
-Hola David Meritano please confirm your account in TusDay in order grant your access to de application
+const sendEmailResetPassword = async (data) => {
 
-Click on the following link or copy and paste it into your browser:
+    const {email, name, token} = data
+    const transport = getMailTransport()
+    const info = await transport.sendMail({
+        from: '"TusDay - Project Administrator" <cuentas@tusday.com>',
+        to:email,
+        subject:"TusDay - Reset your password",
+        text:"Reset your password",
+        html:`<p>Hello ${name}</p>
+        <p>You have requested to reset your password</p>
+        <p>Click on the following link or copy and paste it into your browser to generate a new one:</p> 
+        
+        <a href="${process.env.FRONTEND_URL}/forgot-password/${token}">Reset!</a>
+        
+        <p>If you did not request this email you can ignore this message</p>
 
-Activate your account!
-Si tu no creaste esta cuenta puedes ignorar este mensaje
-
-Regards
-
-TusDay Team
-
-
-*/
+        <p>Regards</p>
+        <p style="font-weight: 900; color:#EA580C;font-size: large;">TusDay Team</p>
+        `
+    })
+}
 
 //Private functions
 const getMailTransport = () => {
     return nodemailer.createTransport({
-        host: "smtp.mailtrap.io",
-        port: 2525,
+        host: process.env.EMAIL_HOST,
+        port: process.env.EMAIL_PORT,
         auth: {
-          user: "81f0b1dded55df",
-          pass: "b72112563fd768"
+          user: process.env.EMAIL_USER,
+          pass: process.env.EMAIL_PASS
         }
       })
 }
 
 
-export { generateId, generateJWT, sendEmailUserRegister }
+export { generateId, generateJWT, sendEmailUserRegister, sendEmailResetPassword }
 

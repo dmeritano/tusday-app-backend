@@ -44,7 +44,7 @@ const getProject = async (req, res) => {
             const error = new Error("Invalid action!")
             return res.status(400).json({msg:error.message})
         }
-        //TODO: consider that collaborators also can get a proyect
+        //IMPORTANT: consider that collaborators also can get a proyect
         
         //Get Tasks of the Project
         const tasks = await Task.find().where("project").equals(project.id)
