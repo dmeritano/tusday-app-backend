@@ -44,17 +44,8 @@ const getProject = async (req, res) => {
             const error = new Error("Invalid action!")
             return res.status(400).json({msg:error.message})
         }
-        //IMPORTANT: consider that collaborators also can get a proyect
-        
-        //Get Tasks of the Project
-        const tasks = await Task.find().where("project").equals(project.id)
-
-        const response = {
-            project,
-            tasks
-        }
-
-        res.json(response)
+        //IMPORTANT: consider that collaborators also can get a proyect        
+        res.json(project)
         
             
     } catch (error) {
@@ -101,7 +92,7 @@ const updateProject = async (req, res) => {
 //Delete
 const deleteProject = async (req, res) => {
 
-    const { id } = req.params
+    const { id } = req.params    
     
     try {
         const isValidId = mongoose.Types.ObjectId.isValid(id)
@@ -119,7 +110,7 @@ const deleteProject = async (req, res) => {
         }
         
         //Delete
-        const deletedInfo = await Project.deleteOne()
+        const deletedInfo = await Project.deleteOne({_id:id})        
         //Response eg: { acknowledged: true, deletedCount: 1 }
         res.json({msg:`Project -${project.name}- deleted`})
 
