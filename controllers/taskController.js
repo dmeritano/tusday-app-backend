@@ -24,6 +24,10 @@ const addTask = async (req, res) => {
 
         //Great! Add task
         const storedTask = await Task.create(req.body)
+        //Set Task ID in Project
+        project.tasks.push(storedTask._id)
+        await project.save()
+        
         res.json(storedTask)
 
     } catch (error) {
