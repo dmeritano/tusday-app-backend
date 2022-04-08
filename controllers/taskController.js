@@ -13,11 +13,11 @@ const addTask = async (req, res) => {
             throw new Error('MongoDB _id is invalid')
         }
 
-        const project = await Project.findById(projectId)        
-        if (!project) {
+        const projectFound = await Project.findById(projectId)
+        if (!projectFound) {
             const error = new Error("Project not found!")
             return res.status(404).json({ msg: error.message })               
-        }else if (project.creator.toString() !== req.user._id.toString()){
+        }else if (projectFound.creator.toString() !== req.user._id.toString()){
             const error = new Error("User does not have permissions to add tasks!")
             return res.status(403).json({msg:error.message})
         }
@@ -25,8 +25,8 @@ const addTask = async (req, res) => {
         //Great! Add task
         const storedTask = await Task.create(req.body)
         //Set Task ID in Project
-        project.tasks.push(storedTask._id)
-        await project.save()
+        projectFound.tasks.push(storedTask._id)
+        await projectFound.save()
         
         res.json(storedTask)
 
@@ -103,9 +103,7 @@ const deleteTask = async (req, res) => {
         if (!isValidId){
             throw new Error('MongoDB _id is invalid')
         }
-
         const task = await Task.findById(id).populate("project")
-        console.log(task)
         if (!task) {
             const error = new Error("Task not found!")
             return res.status(404).json({ msg: error.message })               
@@ -113,9 +111,8 @@ const deleteTask = async (req, res) => {
             const error = new Error("Invalid action!")
             return res.status(403).json({ msg: error.message })               
         }
-        
         //Delete
-        const deletedInfo = await Task.deleteOne()
+        const deletedInfo = await Task.deleteOne({_id:id})
         res.json({msg:`Task -${task.name}- deleted`})
 
     } catch (error) {
