@@ -5,6 +5,7 @@ import {
   getProject,
   updateProject,
   deleteProject,
+  findCollaborator,
   addCollaborator,
   removeCollaborator,
 } from "../controllers/projectController.js"
@@ -20,7 +21,8 @@ router
   .put(checkAuth, updateProject)
   .delete(checkAuth, deleteProject)
 
-router.post("/add-collaborator", checkAuth, addCollaborator)
-router.post("/remove-collaborator", checkAuth, removeCollaborator) // using "post" beacause "delete" it used for eliminate a whole resource, not part of it.
+router.post("/collaborators", checkAuth, findCollaborator)
+router.post("/collaborators/:id", checkAuth, addCollaborator)
+router.delete("/collaborators/:id", checkAuth, removeCollaborator) 
 
 export default router
