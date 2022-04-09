@@ -37,7 +37,10 @@ const getProject = async (req, res) => {
             throw new Error('MongoDB _id is invalid')
         }
 
-        const project = await Project.findById(id).populate("tasks")        
+        const project = await Project.findById(id)
+                .populate("tasks")
+                .populate("collaborators", "name email") //select only name and email.  "_id" comes by default
+
         if (!project) {
             const error = new Error("Project not found!")
             return res.status(404).json({ msg: error.message })               
@@ -185,6 +188,29 @@ const addCollaborator = async (req, res) => { //post
 }
 
 const removeCollaborator = async (req, res) => {
+
+    const { id: idProject } = req.params    
+    const { id: idCollaborator } = req.body
+
+    try {
+        const project = await Project.findById(idProject)        
+        if (!project) {
+            const error = new Error("Project not found!")
+            return res.status(404).json({ msg: error.message })               
+        }else if (project.creator.toString() !== req.user._id.toString()){
+            const error = new Error("Invalid action!")
+            return res.status(400).json({msg:error.message})
+        }
+ 
+        //Ready!
+        project.collaborators.pull(idCollaborator)
+        await project.save()
+        res.json({msg:"Collaborator successfully removed from project"})
+
+    } catch (error) {
+        console.log(`Removing collaborator ${email} from project ${id} - Error: ${error.message}`)
+        res.status(400).json({ msg: "Error removing collaborator from project"})   
+    }     
 
 }
 

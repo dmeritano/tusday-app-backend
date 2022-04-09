@@ -23,6 +23,6 @@ router
 
 router.post("/collaborators", checkAuth, findCollaborator)
 router.post("/collaborators/:id", checkAuth, addCollaborator)
-router.delete("/collaborators/:id", checkAuth, removeCollaborator) 
+router.post("/delete-collaborator/:id", checkAuth, removeCollaborator) 
 
 export default router
