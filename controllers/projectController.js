@@ -22,7 +22,12 @@ const createProject = async (req, res) => {
 //Read
 const getProjects = async (req, res) => {
 
-    const projects = await Project.find().where("creator").equals(req.user).select("-tasks")
+    const projects = await Project.find({
+        '$or' : [
+            {'collaborators' : {$in:req.user}},
+            {'creator' : {$in:req.user}}
+        ]
+    }).select("-tasks")
 
     res.json(projects)
 
@@ -44,7 +49,8 @@ const getProject = async (req, res) => {
         if (!project) {
             const error = new Error("Project not found!")
             return res.status(404).json({ msg: error.message })               
-        }else if (project.creator.toString() !== req.user._id.toString()){
+        }else if (project.creator.toString() !== req.user._id.toString() &&
+            !project.collaborators.some(c => c._id.toString() === req.user._id.toString())){
             const error = new Error("Invalid action!")
             return res.status(400).json({msg:error.message})
         }
@@ -114,7 +120,7 @@ const deleteProject = async (req, res) => {
         }
         
         //Delete
-        const deletedInfo = await Project.deleteOne({_id:id})        
+        const deletedInfo = await project.deleteOne()
         //Response eg: { acknowledged: true, deletedCount: 1 }
         res.json({msg:`Project -${project.name}- deleted`})
 
