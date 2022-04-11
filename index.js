@@ -36,14 +36,53 @@ app.use("/api/users",userRoutes)
 app.use("/api/projects",projectRoutes)
 app.use("/api/tasks",taskRoutes)
 
-//(*) 
+//(*) Variable automatically inserted by the server (Heroku, for example), so it is not necessary to define it in the .env file
 const PORT = process.env.PORT || 4000
 
 
-app.listen(PORT, () => {
+const server = app.listen(PORT, () => {
     console.log(`Server listening on port ${PORT}`)
 })
 
 
+//Socket IO
+import { Server } from "socket.io"
+const io = new Server(server, {
+    pingTimeout:60000,
+    cors:{
+        origin: process.env.FRONTEND_URL        
+    },
+    methods: ["GET", "POST", "PUT", "DELETE"],
+})
+io.on('connection', (socket) => {
+    console.log("Connected to socket.io")
 
-// (*) Variable insertada automáticamente por el servidor (Heroku, por ejemplo), con lo cual no hace falta definirla en el archivo .env
+    socket.on("open-project", (idProject) => {
+        socket.join(idProject) //created room for this project ( 'project-room' )
+    })
+
+    socket.on("new-task", (task) => {     
+        console.log(task)   
+        //emit message to people connected to 'project-room'
+        //project property of task is de ._id of the project
+        const idProject = task.project      //only comes the project ID
+        socket.to(idProject).emit("task-created", task)        
+    })
+
+    socket.on("delete-task", (task) => {
+    const idProject = task.project          //only comes the project ID
+        socket.to(idProject).emit("task-deleted", task)
+    })
+
+    socket.on("update-task", (task) => {
+        const idProject = task.project._id  // here comes complete project object, with all its attributes
+        socket.to(idProject).emit("task-updated", task)
+    })
+
+    socket.on("change-status", (task) => {
+        const idProject = task.project._id  // here comes complete project object, with all its attributes
+        socket.to(idProject).emit("task-status-updated", task)
+    })
+
+
+})
