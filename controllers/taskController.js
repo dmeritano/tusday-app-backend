@@ -141,8 +141,13 @@ const changeStatus = async (req, res) => {
 
     //Change
     task.completed = !task.completed
-    const updated = await task.save()
-    res.json()
+    task.completedBy = req.user._id
+    await task.save()
+
+    const updated = await Task.findById(id).populate("project").populate("completedBy")
+
+    res.json(updated)
+    
   } catch (error) {
     console.log(`Change status of task with id ${id} - Error: ${error.message}`)
     res.status(400).json({ msg: "Error changing status of task" })

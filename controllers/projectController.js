@@ -42,8 +42,8 @@ const getProject = async (req, res) => {
             throw new Error('MongoDB _id is invalid')
         }
 
-        const project = await Project.findById(id)
-                .populate("tasks")
+        const project = await Project.findById(id)                
+                .populate({ path: "tasks", populate: {path:"completedBy", select:"name"}}) //multiple populate
                 .populate("collaborators", "name email") //select only name and email.  "_id" comes by default
 
         if (!project) {
