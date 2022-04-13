@@ -29,9 +29,7 @@ const addTask = async (req, res) => {
 
     res.json(storedTask)
   } catch (error) {
-    console.log(
-      `Adding task to project with id ${projectId} - Error: ${error.message}`
-    )
+    console.log(`Adding task to project with id ${projectId} - Error: ${error.message}`)
     res.status(400).json({ msg: "Error adding task to project!" })
   }
 }

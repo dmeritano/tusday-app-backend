@@ -62,7 +62,6 @@ io.on('connection', (socket) => {
     })
 
     socket.on("new-task", (task) => {     
-        console.log(task)   
         //emit message to people connected to 'project-room'
         //project property of task is de ._id of the project
         const idProject = task.project      //only comes the project ID
@@ -84,5 +83,17 @@ io.on('connection', (socket) => {
         socket.to(idProject).emit("task-status-updated", task)
     })
 
+    //Room for project list. => "/projects" url
+    const LIST_PROJECTS_ROOM = "list-of-projects-room"
+    socket.on("list-of-projects", () => {
+        console.log("connected to room list of projects")
+        socket.join(LIST_PROJECTS_ROOM)
+    })
+    socket.on("delete-project", (project) => {     
+        socket.to(LIST_PROJECTS_ROOM).emit("project-deleted", project)
+    })    
+    socket.on("update-project", (project) => {     
+        socket.to(LIST_PROJECTS_ROOM).emit("project-updated", project)
+    })      
 
 })

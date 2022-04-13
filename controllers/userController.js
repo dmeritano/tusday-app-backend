@@ -144,7 +144,6 @@ const updatePassword = async (req, res) => {
 
   try {
     const { token } = req.params
-    console.log("eq6au19tnt81fviph9lb", token)
 
     const { password } = req.body
     const registeredUsr = await User.findOne({ token })
@@ -153,7 +152,6 @@ const updatePassword = async (req, res) => {
       return res.status(404).json({ msg: error.message })      
     }
 
-    console.log("usuario encontrado por token")
     registeredUsr.password = password
     registeredUsr.token = ""
     registeredUsr.save()

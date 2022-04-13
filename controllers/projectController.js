@@ -110,19 +110,21 @@ const deleteProject = async (req, res) => {
             throw new Error('MongoDB _id is invalid')
         }
 
-        const project = await Project.findById(id)        
-        if (!project) {
+        const projectSearch = await Project.findById(id)        
+        if (!projectSearch) {
             const error = new Error("Project not found!")
             return res.status(404).json({ msg: error.message })               
-        }else if (project.creator.toString() !== req.user._id.toString()){
+        }else if (projectSearch.creator.toString() !== req.user._id.toString()){
             const error = new Error("Invalid action!")
             return res.status(400).json({msg:error.message})
         }
-        
-        //Delete
-        const deletedInfo = await project.deleteOne()
-        //Response eg: { acknowledged: true, deletedCount: 1 }
-        res.json({msg:`Project -${project.name}- deleted`})
+       
+        //Delete project and its tasks
+        await Promise.allSettled([
+            await Task.deleteMany({project:projectSearch._id}),
+            await projectSearch.deleteOne()
+        ])
+        res.json({msg:`Project -${projectSearch.name}- deleted`})
 
     } catch (error) {
         console.log(`Deleting project with id ${id} - Error: ${error.message}`)
