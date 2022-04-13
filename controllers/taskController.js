@@ -44,7 +44,7 @@ const updateTask = async (req, res) => {
     if (!isValidId) {
       throw new Error("MongoDB _id is invalid")
     }
-    const task = await Task.findById(id).populate("project")
+    const task = await Task.findById(id).populate("project").populate("completedBy")
     if (!task) {
       const error = new Error("Task not found!")
       return res.status(404).json({ msg: error.message })
