@@ -86,7 +86,6 @@ io.on('connection', (socket) => {
     //Room for project list. => "/projects" url
     const LIST_PROJECTS_ROOM = "list-of-projects-room"
     socket.on("list-of-projects", () => {
-        console.log("connected to room list of projects")
         socket.join(LIST_PROJECTS_ROOM)
     })
     socket.on("delete-project", (project) => {     
