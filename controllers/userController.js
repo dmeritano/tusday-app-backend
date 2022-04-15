@@ -1,3 +1,4 @@
+import { generate } from "text-to-image"
 import User from "../models/User.js"
 import { generateId, generateJWT, sendEmailUserRegister, sendEmailResetPassword } from "../helpers/index.js"
 
@@ -172,4 +173,25 @@ const profile = async (req, res) => {
   
 }
 
-export { register, authenticate, confirm, reset, validateToken, updatePassword, profile}
+
+const getCaptchaData = async (req, res) => {
+
+
+  const { number } = req.params
+  
+  const img = await generate(number, {
+    fontSize: 18,
+    fontFamily: 'Arial',
+    margin: 5,
+    textColor: 'red',
+    maxWidth: 20,
+    lineHeight: 10,
+    verticalAlign: "center",
+    textAlign: "center",
+  });
+
+  const response = { img }
+  res.json(response)
+}
+
+export { register, authenticate, confirm, reset, validateToken, updatePassword, profile, getCaptchaData}

@@ -1,5 +1,5 @@
 import express from "express"
-import { register, authenticate, confirm, reset, validateToken, updatePassword, profile } from "../controllers/userController.js"
+import { register, authenticate, confirm, reset, validateToken, updatePassword, profile, getCaptchaData } from "../controllers/userController.js"
 import checkAuth from "../middleware/checkAuth.js"
 const router = express.Router()
 
@@ -15,6 +15,9 @@ router.route("/reset-password/:token")
 
 //Protected routes - Using middleware
 router.get("/profile", checkAuth, profile)
+
+//Captcha
+router.get("/captcha/:number", getCaptchaData)
 
 
 export default router

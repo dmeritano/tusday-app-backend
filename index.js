@@ -55,7 +55,7 @@ const io = new Server(server, {
     methods: ["GET", "POST", "PUT", "DELETE"],
 })
 io.on('connection', (socket) => {
-    console.log("Connected to socket.io")
+    //console.log("Connected to socket.io")
 
     socket.on("open-project", (idProject) => {
         socket.join(idProject) //created room for this project ( 'project-room' )
