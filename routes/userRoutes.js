@@ -17,7 +17,7 @@ router.route("/reset-password/:token")
 router.get("/profile", checkAuth, profile)
 
 //Captcha
-router.get("/captcha/:number", getCaptchaData)
+router.post("/captcha/:number", getCaptchaData)
 
 
 export default router
