@@ -176,9 +176,8 @@ const profile = async (req, res) => {
 
 const getCaptchaData = async (req, res) => {
 
-
   const { number } = req.params
-  
+ 
   const img = await generate(number, {
     fontSize: 18,
     fontFamily: 'Arial',
@@ -188,8 +187,8 @@ const getCaptchaData = async (req, res) => {
     lineHeight: 10,
     verticalAlign: "center",
     textAlign: "center",
+    bgColor: "#DBEAFE",
   });
-
   const response = { img }
   res.json(response)
 }
